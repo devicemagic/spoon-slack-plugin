@@ -37,6 +37,14 @@ artifacts {
 //    sign configurations.archives
 //}
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {

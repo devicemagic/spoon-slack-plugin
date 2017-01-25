@@ -18,7 +18,7 @@ class SlackPlugin implements Plugin<Project> {
     void apply(Project project) {
 
         mTaskLogBuilder = new StringBuilder()
-        mExtension = project.extensions.create('slack-spoon', SlackPluginExtension)
+        mExtension = project.extensions.create('slack', SlackPluginExtension)
 
         project.task("spoon-build") {
             new ByteArrayOutputStream().withStream { os ->
