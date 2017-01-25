@@ -46,15 +46,15 @@ uploadArchives {
             repository(url: uri('../repo'))
 
             pom.project {
-                name 'gradle-slack-plugin'
+                name 'spoon-slack-plugin'
                 packaging 'jar'
-                description 'Gradle plugin to send messages to Slack after each build '
-                url 'https://github.com/Mindera/gradle-slack-plugin'
+                description 'Gradle plugin to send messages to Slack when a spoon test suite is run.'
+                url 'https://github.com/devicemagic/spoon-slack-plugin'
 
                 scm {
-                    connection 'scm:git@github.com:Mindera/gradle-slack-plugin.git'
-                    developerConnection 'scm:git@github.com:Mindera/gradle-slack-plugin.git'
-                    url 'https://github.com/Mindera/gradle-slack-plugin'
+                    connection 'scm:git@github.com:devicemagic/spoon-slack-plugin.git'
+                    developerConnection 'scm:git@github.com:devicemagic/spoon-slack-plugin.git'
+                    url 'https://github.com/devicemagic/spoon-slack-plugin'
                 }
 
                 licenses {
@@ -66,9 +66,9 @@ uploadArchives {
 
                 developers {
                     developer {
-                        id 'joaoprudencio'
-                        name 'Joao Prudencio'
-                        email 'joao.prudencio@mindera.com'
+                        id 'devicemagic'
+                        name 'Joel Dean'
+                        email 'joel@devicemagic.com'
                     }
                 }
             }
