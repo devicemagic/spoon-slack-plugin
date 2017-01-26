@@ -6,68 +6,47 @@ import net.gpedro.integrations.slack.SlackMessage
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.execution.TaskExecutionListener
-import org.gradle.api.logging.StandardOutputListener
-import org.gradle.api.tasks.TaskState
 
 class SlackPlugin implements Plugin<Project> {
 
     SlackPluginExtension mExtension
-    StringBuilder mTaskLogBuilder
 
     void apply(Project project) {
 
-        mTaskLogBuilder = new StringBuilder()
+
         mExtension = project.extensions.create('slack', SlackPluginExtension)
 
         project.task("spoon-build") {
 
             def process = "gradlew.bat spoon".execute()
+
             def stringBuffer = new StringBuffer()
-            process.consumeProcessOutputStream(stringBuffer)
+            def errorBuffer = new StringBuffer()
+
+            process.waitForProcessOutput(stringBuffer,errorBuffer)
             def output = stringBuffer.toString()
 
-            println(output)
+            println("DEBUGGGG TESTER DEBUGGGG"+output)
+
+            def printErr = System.err.&println
+
+            printErr(errorBuffer.toString())
 
             if (output.contains("Tests") && output.contains("html")) {
                 def url = output.substring(output.indexOf("Tests"), output.indexOf("html"))
                 sendSpoonUrlToSlack(url, this)
             } else {
-                println("An error occurred with the test results.")
+                printErr("An error occurred with the test results and the link wasn't generated.")
             }
         }
 
-        project.afterEvaluate {
-            if (mExtension.url != null && mExtension.enabled)
-                monitorTasksLifecycle(project)
-        }
     }
 
-
     void sendSpoonUrlToSlack(String url, Task task) {
-        SlackMessage slackMessage = SlackMessageTransformer.buildSlackMessage(mExtension.title, url, task, task.getState(), mTaskLogBuilder.toString())
+        SlackMessage slackMessage = SlackMessageTransformer.buildSlackMessage(mExtension.title, url, task, task.getState())
         SlackApi api = new SlackApi(mExtension.url)
         api.call(slackMessage)
     }
 
-    void monitorTasksLifecycle(Project project) {
-
-
-        project.getGradle().getTaskGraph().addTaskExecutionListener(new TaskExecutionListener() {
-            @Override
-            void beforeExecute(Task task) {
-                task.logging.addStandardOutputListener(new StandardOutputListener() {
-                    @Override
-                    void onOutput(CharSequence charSequence) {
-                        mTaskLogBuilder.append(charSequence)
-                    }
-                })
-            }
-
-            @Override
-            void afterExecute(Task task, TaskState state) {
-            }
-        })
-    }
 }
 

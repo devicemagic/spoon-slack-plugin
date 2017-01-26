@@ -19,7 +19,7 @@ class SlackMessageTransformer {
     private static final String AUTHOR_TITLE = 'Git Author'
     private static final String COMMIT_TITLE = 'Git Commit'
 
-    static SlackMessage buildSlackMessage(String title,String url, Task task, TaskState state, String taskLog) {
+    static SlackMessage buildSlackMessage(String title,String url, Task task, TaskState state) {
         Throwable failure = state.getFailure()
         boolean success = failure == null
 
@@ -39,11 +39,6 @@ class SlackMessageTransformer {
         message.append("To see the test results, click this link : ")
         message.append(url)
 
-
-        if (!success && taskLog != null) {
-            message.append('\n')
-            message.append(taskLog)
-        }
         attachments.setText(message.toString())
         attachments.setFallback(message.toString())
 
