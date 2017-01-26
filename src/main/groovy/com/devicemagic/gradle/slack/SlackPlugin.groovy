@@ -21,26 +21,20 @@ class SlackPlugin implements Plugin<Project> {
         mExtension = project.extensions.create('slack', SlackPluginExtension)
 
         project.task("spoon-build") {
-            new ByteArrayOutputStream().withStream { os ->
-                def result = exec {
-                    executable = 'gradlew'
-                    args = ['spoon']
-                    standardOutput = os
-                }
 
-                def output = os.toString()
-                println(output)
+            def process = "gradlew.bat spoon".execute()
+            def stringBuffer = new StringBuffer()
+            process.consumeProcessOutputStream(stringBuffer)
+            def output = stringBuffer.toString()
 
-                if(output.contains("Tests") && output.contains("html")) {
-                    def url = output.substring(output.indexOf("Tests"), output.indexOf("html"))
-                    sendSpoonUrlToSlack(url, this)
-                }
-                else
-                {
-                    println("An error occurred with the test results.")
-                }
+            println(output)
+
+            if (output.contains("Tests") && output.contains("html")) {
+                def url = output.substring(output.indexOf("Tests"), output.indexOf("html"))
+                sendSpoonUrlToSlack(url, this)
+            } else {
+                println("An error occurred with the test results.")
             }
-
         }
 
         project.afterEvaluate {
@@ -48,6 +42,7 @@ class SlackPlugin implements Plugin<Project> {
                 monitorTasksLifecycle(project)
         }
     }
+
 
     void sendSpoonUrlToSlack(String url, Task task) {
         SlackMessage slackMessage = SlackMessageTransformer.buildSlackMessage(mExtension.title, url, task, task.getState(), mTaskLogBuilder.toString())
@@ -74,6 +69,5 @@ class SlackPlugin implements Plugin<Project> {
             }
         })
     }
-
-
 }
+
